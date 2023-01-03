@@ -1,0 +1,15 @@
+schema: '2.0'
+stages:
+  run_experiment:
+    cmd: python src/02_tensorflow_insurance_data.py
+    deps:
+    - path: data/raw/insurance.csv
+      md5: b49263291b5f4398cffa0e664b93bee3
+      size: 55628
+    - path: src/02_tensorflow_insurance_data.py
+      md5: 5bb9b62fd89f93844a69a287975a917b
+      size: 3476
+    outs:
+    - path: metrics/metrics.yml
+      md5: 6808293283dd0ae6cf50e87b0c3fef86
+      size: 82

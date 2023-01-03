@@ -1,0 +1,9 @@
+stages:
+  run_experiment:
+    cmd: python src/02_tensorflow_insurance_data.py
+    deps:
+    - data/raw/insurance.csv
+    - src/02_tensorflow_insurance_data.py
+    metrics:
+    - metrics/metrics.yml:
+        cache: false

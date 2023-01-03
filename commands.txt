@@ -1,5 +1,5 @@
-dvc run -n run_experiment \
+dvc run --force \
+        -n run_experiment \
         -d src/02_tensorflow_insurance_data.py -d data/raw/insurance.csv \
-        -p parameters/ \
-        -o metrics/metrics.yml \
+        -M metrics/metrics.yml \
 python src/02_tensorflow_insurance_data.py

@@ -1,0 +1,4 @@
+outs:
+- md5: b49263291b5f4398cffa0e664b93bee3
+  size: 55628
+  path: insurance.csv
