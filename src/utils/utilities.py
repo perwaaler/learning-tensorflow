@@ -88,12 +88,12 @@ def get_auc_and_plot_roc(bin_target,
     auc = roc_auc_score(y_true=bin_target, y_score=scores)
 
     if plot == True:
+        plt.figure()
         plt.plot(fpr, tpr, c="k")
         if class_thr == None:
             plt.title(f"The AUC is {auc:.2}")
         else:
             plt.title(f"ROC for prediction of charges >= {class_thr}.\n"
                       f"The AUC is {auc:.3}")
-        plt.show()
 
     return auc, fpr, tpr, thresholds

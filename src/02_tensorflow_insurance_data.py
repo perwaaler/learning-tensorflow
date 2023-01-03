@@ -1,6 +1,5 @@
 # %% import dependencies
 from get_data import DATA
-from sklearn.metrics import roc_curve, roc_auc_score
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 import matplotlib.pylab as plt
@@ -8,11 +7,17 @@ import pandas as pd
 import importlib
 import numpy as np
 
+import utils.infrastructure as infra
 import utils.utilities as mf
+importlib.reload(mf)
 importlib.reload(mf)
 
 
-# read insurance dataset
+# %% plot data
+plt.figure()
+plt.scatter(np.arange(len(DATA["charges"])),
+            DATA["charges"],
+            marker=".")
 
 # %% Convert categorical variables to one-hot-encoding
 data = pd.get_dummies(DATA)
@@ -42,16 +47,36 @@ history = model.compile(
     metrics="mae"
 )
 
+# define normalization/standardization transform for y-data:
+
+
+def y_transform(x):
+    # concave transformation:
+    y = tf.math.sqrt(x)
+    # vertical shift:
+    global y_level_shift
+    y_level_shift = tf.reduce_mean(y)
+    y = y - y_level_shift
+    return y
+
+
+def y_transform_inv(y):
+    x = y + y_level_shift
+    x = tf.math.square(x)
+    return x
+
+
+data["charges"] = y_transform(DATA["charges"])
 
 n_epochs = 150
 history = model.fit(x_train,
-                    y_train,
+                    y_transform(y_train),
                     epochs=n_epochs,
                     verbose=False)
 
 # predict on train and test set:
-y_test_pred = model.predict(x_test)
-y_train_pred = model.predict(x_train)
+y_test_pred = y_transform_inv(model.predict(x_test))
+y_train_pred = y_transform_inv(model.predict(x_train))
 
 # create a binary prediction class defined by threshold exceedence:
 class_thr = 30000
@@ -63,6 +88,7 @@ class_train_pred = y_train_pred >= class_thr
 # get some test metrics:
 mae_test = mf.mae(y_test_pred, y_test)
 mae_train = mf.mae(y_train_pred, y_train)
+mae_relative_test = mf.mae_relative(y_train_pred, y_train)
 
 print(f"the average test set error is {mae_test:.1f}\n"
       f"the average training set error is {mae_train:.1f}\n"
@@ -72,29 +98,30 @@ print(f"the average test set error is {mae_test:.1f}\n"
 auc = mf.get_auc_and_plot_roc(bin_target=class_test,
                               scores=y_test_pred,
                               plot=True,
-                              class_thr=class_thr)
+                              class_thr=class_thr)[0]
 
+plt.figure()
 plt.scatter(y_test_pred, y_test)
 plt.xlabel("target values")
 plt.ylabel("predicted values")
-plt.title("predicted vs target y-value (charges)")
-plt.show()
+plt.title(f"predicted vs target Y = insurance cost\n"
+          f"MAE: {mae_test:.2f}. MAE relative: {mae_relative_test:.2}")
 
 training_progress = history.history
 dict.keys(training_progress)
+plt.figure()
 plt.plot(training_progress["mae"])
 plt.title("mean-average-error during training")
 plt.xlabel("epoch")
 plt.ylabel("MAE")
+
+# %% save metrics in yaml file:
+
+metrics = {"auc": float(auc),
+           "mae": float(mae_test.numpy()),
+           "mae_relative": float(mae_relative_test.numpy())}
+
+infra.save_to_yaml(
+    "/home/per/medsensio/learning/tensorflow/metrics/metrics.yml", metrics)
+
 plt.show()
-
-
-# %% plot ROC and get test-AUC:
-
-
-# alternatively:
-# fpr, tpr, thresholds = roc_curve(class_test, y_test_pred)
-# auc = roc_auc_score(y_true=class_test, y_score=y_test_pred)
-# plt.plot(fpr, tpr)
-# plt.title(f"ROC for prediction of charges >= {class_thr}.\n"
-#           f"The AUC is {auc:.2}")
