@@ -1,4 +1,5 @@
 # %% Import dependencies
+from get_data import DF
 import yaml
 import os
 import utils.utilities as mf
@@ -11,6 +12,7 @@ import pandas as pd
 import tensorflow as tf
 import utils.utilities as utilities
 
+import utils.infrastructure as infra
 from get_paths import DATA_DIR, PROJECT_DIR, PARAMETERS_DIR
 
 path_saved_model = "/home/per/medsensio/learning/tensorflow/models"
@@ -251,6 +253,3 @@ model2 = tf.keras.models.load_model(os.path.join(
 )
 # check model summary:
 model1.summary()
-
-
-# %% Load data
