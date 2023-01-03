@@ -68,7 +68,7 @@ def y_transform_inv(y):
 
 data["charges"] = y_transform(DATA["charges"])
 
-n_epochs = 150
+n_epochs = 160
 history = model.fit(x_train,
                     y_transform(y_train),
                     epochs=n_epochs,
