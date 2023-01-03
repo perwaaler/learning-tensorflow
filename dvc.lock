@@ -7,9 +7,9 @@ stages:
       md5: b49263291b5f4398cffa0e664b93bee3
       size: 55628
     - path: src/02_tensorflow_insurance_data.py
-      md5: 3b224a8b550ea5f90a9fd271cd3448b6
-      size: 3476
+      md5: 710f40a8a01e71e3d5c4169a669590d7
+      size: 3544
     outs:
     - path: metrics/metrics.yml
-      md5: 2af43a199fbf26cd25aeaf138c3e62b0
-      size: 81
+      md5: d7f36b21e5e2bbb384c17a226d7ffe7c
+      size: 80
